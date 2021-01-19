@@ -119,8 +119,6 @@ namespace UntisUPZperMail
         }
         private void MyBorder_DragLeave(object sender, DragEventArgs e)
         {
-            MyBorder.Opacity = 1;
-            MyBorder.BorderThickness = new Thickness(10, 10, 10, 10);
             MyBorder.Opacity = 0.5;
             MyBorder.BorderThickness = new Thickness(4, 4, 4, 4);
         }
