@@ -5,8 +5,42 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UntisUPZperMail"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="UPZ-Nachweise per Mail von Claus Gumbmann"
+        Height="350"
+        Width="350"
+        ResizeMode="NoResize"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown">
     <Grid>
-        
+        <Border x:Name="MyBorder"
+                BorderThickness="4,4,4,4"
+                BorderBrush="Red"
+                CornerRadius="30"
+                AllowDrop="True"
+                Background="LightGreen"
+                Opacity="0.5"
+                Drop="Border_Drop"
+                MouseLeave="Border_MouseLeave" DragEnter="MyBorder_DragEnter" DragLeave="MyBorder_DragLeave"/>
+        <Label x:Name="DropSign"
+               Content="PDF"
+               FontSize="144"
+               Foreground="Orange"
+               Opacity="0.4"
+               VerticalAlignment="Center"
+               HorizontalAlignment="Center"
+               Padding="0"
+               AllowDrop="True"
+               Drop="Border_Drop" DragEnter="MyBorder_DragEnter" DragLeave="MyBorder_DragLeave"/>
+
+        <Label Content="X"
+               FontSize="20"
+               VerticalAlignment="Top"
+               HorizontalAlignment="Right"
+               Margin="0,0,15,0"
+               MouseLeftButtonDown="X_MouseLeftButtonDown"
+               MouseEnter="UIE_MouseEnter"
+               MouseLeave="UIE_MouseLeave"/>
     </Grid>
 </Window>
