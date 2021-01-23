@@ -45,6 +45,7 @@ namespace UntisUPZperMail
                 else
                 {
                     //List<MsOutlook.MailItem> mails = new List<MsOutlook.MailItem>();
+                    Mouse.OverrideCursor = Cursors.Wait;
 
                     string teachers = File.ReadAllText(System.IO.Path.Combine(mainPath, "teachers.txt"));
                     string[] teacher = teachers.Split('\n');
@@ -55,6 +56,10 @@ namespace UntisUPZperMail
 
                     string srcPath = s[0];
                     string destPath;
+
+                    MsOutlook.Application outApp = new MsOutlook.Application();
+                    MsOutlook.Accounts accounts = outApp.Session.Accounts;
+                    MsOutlook.Account account = accounts["upz@sbs-herzogenaurach.de"];
 
                     var pdfDoc = new PdfDocument(new PdfReader(srcPath));
                     int mailCounter = 0;
@@ -69,20 +74,26 @@ namespace UntisUPZperMail
                             {
                                 destPath = (teacherElement[1] == "Herzogenaurach") ? string.Format(@"G:\Untis\UPZ-Pflege\UPZ Sj 20-21\MA-Nachweise\Herzogenaurach\{0}.pdf", teacherElement[0]) : string.Format(@"G:\Untis\UPZ-Pflege\UPZ Sj 20-21\MA-Nachweise\Höchstadt\{0}.pdf", teacherElement[0]);
                                 var pdf = new PdfDocument(new PdfWriter(destPath));
+                                PdfDocumentInfo info = pdf.GetDocumentInfo();
+                                info.SetTitle("Nachweis Unterrichtspflichtzeit");
+                                info.SetAuthor("");
+                                info.SetSubject("");
+                                info.SetKeywords(teacherElement[1]);
                                 pdfDoc.CopyPagesTo(page, page, pdf);
                                 var document = new Document(pdf);
                                 document.Close();
-                                MsOutlook.Application outapp = new MsOutlook.Application();
-                                MsOutlook.MailItem mail = (MsOutlook.MailItem)outapp.CreateItem(MsOutlook.OlItemType.olMailItem);
+                                MsOutlook.MailItem mail = (MsOutlook.MailItem)outApp.CreateItem(MsOutlook.OlItemType.olMailItem);
                                 mail.Subject = subject;
                                 mail.To = teacherElement[0];
                                 mail.Body = body;
                                 mail.Attachments.Add(destPath);
+                                mail.SendUsingAccount = account;
                                 mail.Send();
                                 mailCounter++;
                             }
                         }
                     }
+                    Mouse.OverrideCursor = Cursors.Hand;
                     if (mailCounter == 1)
                     {
                         MessageBox.Show(string.Format(@"{0} E-Mail versendet.", mailCounter), "Quittung", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
@@ -113,13 +124,13 @@ namespace UntisUPZperMail
         private void Border_MouseLeave(object sender, MouseEventArgs e)
         {
             DropSign.FontSize = 144;
-            DropSign.Content = "PDF";
-            MyBorder.Opacity = 0.5;
+            DropSign.Content = "Untis";
+            MyBorder.Opacity = 0.7;
             MyBorder.BorderThickness = new Thickness(4, 4, 4, 4);
         }
         private void MyBorder_DragLeave(object sender, DragEventArgs e)
         {
-            MyBorder.Opacity = 0.5;
+            MyBorder.Opacity = 0.7;
             MyBorder.BorderThickness = new Thickness(4, 4, 4, 4);
         }
 
