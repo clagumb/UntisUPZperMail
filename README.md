@@ -16,5 +16,5 @@ Text für den Betreff der E-Mail</p>
 
 <p>Body.txt:<br>
 &lt;HTML&gt;<br>
-Text für die E-Mail mit HTML-Tags<br>
+Text für die E-Mail mit HTML-Tags formatiert.<br>
 &lt;/HTML&gt;
