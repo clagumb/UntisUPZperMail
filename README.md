@@ -1,5 +1,5 @@
 # UntisUPZperMail
-Aus dem Stundenplanprogramm Untis erstelltes Gesamt-PDF zum UPZ-Nachweis in einzelne PDFs splitten und direkt per Outlook Desktop versenden.
+Aus dem Stundenplanprogramm Untis erstelltes Gesamt-PDF der Wcohenwerte der Kollegen*innen in einzelne PDFs splitten und direkt per Outlook Desktop versenden.
 
 <p>Es werden 4 Config-Dateien benötigt:</p>
 <p>Teachers.txt:<br>
