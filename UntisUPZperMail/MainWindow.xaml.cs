@@ -85,7 +85,7 @@ namespace UntisUPZperMail
                                 MsOutlook.MailItem mail = (MsOutlook.MailItem)outApp.CreateItem(MsOutlook.OlItemType.olMailItem);
                                 mail.Subject = subject;
                                 mail.To = teacherElement[0];
-                                mail.Body = body;
+                                mail.HTMLBody = body;
                                 mail.Attachments.Add(destPath);
                                 mail.SendUsingAccount = account;
                                 mail.Send();
@@ -94,13 +94,34 @@ namespace UntisUPZperMail
                         }
                     }
                     Mouse.OverrideCursor = Cursors.Hand;
-                    if (mailCounter == 1)
+                    switch (mailCounter)
                     {
-                        MessageBox.Show(string.Format(@"{0} E-Mail versendet.", mailCounter), "Quittung", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
-                    }
-                    else
-                    {
-                        MessageBox.Show(string.Format(@"{0} E-Mails versendet.", mailCounter), "Quittung", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
+                        case 0:
+                            MessageBox.Show(string.Format($"Dieses PDF enthält keine Wochenwerte aus Untis {untisVersion}.")
+                                , "Achtung"
+                                , MessageBoxButton.OK
+                                , MessageBoxImage.Warning
+                                , MessageBoxResult.OK
+                                , MessageBoxOptions.DefaultDesktopOnly);
+                            break;
+                        case 1:
+                            MessageBox.Show(string.Format(@"{0} E-Mail versendet.", mailCounter)
+                                , "Quittung"
+                                , MessageBoxButton.OK
+                                , MessageBoxImage.Information
+                                , MessageBoxResult.OK
+                                , MessageBoxOptions.DefaultDesktopOnly);
+                            Environment.Exit(0);
+                            break;
+                        default:
+                            MessageBox.Show(string.Format(@"{0} E-Mails versendet.", mailCounter)
+                                , "Quittung"
+                                , MessageBoxButton.OK
+                                , MessageBoxImage.Information
+                                , MessageBoxResult.OK
+                                , MessageBoxOptions.DefaultDesktopOnly);
+                            Environment.Exit(0);
+                            break;
                     }
                 }
             }
