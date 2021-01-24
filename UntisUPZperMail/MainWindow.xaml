@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UntisUPZperMail"
         mc:Ignorable="d"
-        Title="UPZ-Nachweise per Mail von Claus Gumbmann"
+        Title="Untis UPZ"
         Height="350"
         Width="350"
         ResizeMode="NoResize"
@@ -44,5 +44,12 @@
                MouseLeftButtonDown="X_MouseLeftButtonDown"
                MouseEnter="UIE_MouseEnter"
                MouseLeave="UIE_MouseLeave"/>
+        <Label VerticalAlignment="Bottom"
+               HorizontalAlignment="Right"
+               Content="by Claus Gumbmann"
+               FontSize="10"
+               Margin="0,0,20,8"
+               AllowDrop="True"
+               Drop="Border_Drop" DragEnter="MyBorder_DragEnter" DragLeave="MyBorder_DragLeave"/>
     </Grid>
 </Window>
