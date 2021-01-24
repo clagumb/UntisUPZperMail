@@ -15,6 +15,8 @@ Die Kombination aus Name, Vorname muss mit den Kontakten in Outlook übereinstim
 Text für den Betreff der E-Mail</p>
 
 <p>Body.txt:<br>
+<pre>
 <html>
 Text für die E-Mail mit HTML-Tags
 </html>
+</pre>
