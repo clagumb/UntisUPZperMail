@@ -8,13 +8,13 @@ Name, Vorname#Standort<br>
 Die Kombination aus Name, Vorname muss mit den Kontakten in Outlook übereinstimmen.
 Über den Standort kann man die Ablage der PDFs in verschiedene Ordner steuern.</p>
 
-UntisVersion.txt:
-2021
+<p>UntisVersion.txt:<br>
+2021</p>
 
-Subject.txt:
-Text für den Betreff der E-Mail
+<p>Subject.txt:<br>
+Text für den Betreff der E-Mail</p>
 
-Body.txt:
+<p>Body.txt:<br>
 <html>
 Text für die E-Mail mit HTML-Tags
 </html>
