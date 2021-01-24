@@ -15,4 +15,6 @@ Subject.txt:
 Text für den Betreff der E-Mail
 
 Body.txt:
-Text für die E-Mail
+<html>
+Text für die E-Mail mit HTML-Tags
+</html>
