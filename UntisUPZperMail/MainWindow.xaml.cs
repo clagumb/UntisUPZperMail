@@ -27,6 +27,22 @@ namespace UntisUPZperMail
     {
         private readonly string mainPath = @"G:\Ablage neu\03 Schulverwaltung\SchVwSoftware\config\UntisUPZperMail";
 
+        private PdfDocument CreatePDFWriter(string _destPath)
+        {
+            string destPath = _destPath;
+            MessageBox.Show(destPath);
+            try
+            {
+                PdfDocument pdf = new PdfDocument(new PdfWriter(destPath));
+                return pdf;
+            }
+            catch (Exception error)
+            {
+                MessageBox.Show(error.ToString());
+            }
+            return null;
+        }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -55,7 +71,6 @@ namespace UntisUPZperMail
                     string body = File.ReadAllText(System.IO.Path.Combine(mainPath, "Body.txt")).Trim('\n', ' ');
 
                     string srcPath = s[0];
-                    string destPath;
 
                     MsOutlook.Application outApp = new MsOutlook.Application();
                     MsOutlook.Accounts accounts = outApp.Session.Accounts;
@@ -70,18 +85,24 @@ namespace UntisUPZperMail
                         foreach (var element in teacher)
                         {
                             string[] teacherElement = element.Split('#');
+                            MessageBox.Show(teacherElement[0] + " " + teacherElement[1]);
                             if (pageContent.IndexOf(teacherElement[0]) > 0 && pageContent.IndexOf(untisVersion) > 0)
                             {
-                                destPath = (teacherElement[1] == "Herzogenaurach") ? string.Format(@"G:\Untis\UPZ-Pflege\UPZ Sj 20-21\MA-Nachweise\Herzogenaurach\{0}.pdf", teacherElement[0]) : string.Format(@"G:\Untis\UPZ-Pflege\UPZ Sj 20-21\MA-Nachweise\Höchstadt\{0}.pdf", teacherElement[0]);
-                                var pdf = new PdfDocument(new PdfWriter(destPath));
-                                PdfDocumentInfo info = pdf.GetDocumentInfo();
-                                info.SetTitle("Nachweis Unterrichtspflichtzeit");
-                                info.SetAuthor("");
-                                info.SetSubject("");
-                                info.SetKeywords(teacherElement[1]);
-                                pdfDoc.CopyPagesTo(page, page, pdf);
-                                var document = new Document(pdf);
-                                document.Close();
+                                string path = string.Format(@"G:\Untis\UPZ-Pflege\UPZ Sj 20-21\MA-Nachweise\{1}\{0}.pdf", teacherElement[0], teacherElement[1]);
+                                PdfDocument pdf = CreatePDFWriter(path);
+                                if (pdf != null)
+                                {
+                                    PdfDocumentInfo info = pdf.GetDocumentInfo();
+                                    info.SetTitle("Nachweis Unterrichtspflichtzeit");
+                                    info.SetAuthor("");
+                                    info.SetSubject("");
+                                    info.SetKeywords(teacherElement[1]);
+                                    pdfDoc.CopyPagesTo(page, page, pdf);
+                                    var document = new Document(pdf);
+                                    document.Close();
+                                }
+                                
+                                /*
                                 MsOutlook.MailItem mail = (MsOutlook.MailItem)outApp.CreateItem(MsOutlook.OlItemType.olMailItem);
                                 mail.Subject = subject;
                                 mail.To = teacherElement[0];
@@ -90,8 +111,11 @@ namespace UntisUPZperMail
                                 mail.SendUsingAccount = account;
                                 mail.Send();
                                 mailCounter++;
+                                */
+                                break;
                             }
                         }
+
                     }
                     Mouse.OverrideCursor = Cursors.Hand;
                     switch (mailCounter)
