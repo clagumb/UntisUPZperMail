@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -20,6 +18,8 @@ using iText.Kernel.Pdf.Canvas.Parser.Listener;
 using iText.Layout;
 using System.Xml;
 using MsOutlook = Microsoft.Office.Interop.Outlook;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace UntisUPZperMail
 {
@@ -27,22 +27,41 @@ namespace UntisUPZperMail
     {
         private readonly string mainPath = @"G:\Ablage neu\03 Schulverwaltung\SchVwSoftware\config\UntisUPZperMail";
 
-        private PdfDocument CreatePDFWriter(string _destPath)
+        private List<String> CreatepdfSubstring(string srcPath)
         {
-            string destPath = _destPath;
-            MessageBox.Show(destPath);
+            PdfDocument pdfDoc = new PdfDocument(new PdfReader(srcPath));
+            List<String> pdfSubstring = new List<String>();
+            for (int page = 1; page <= pdfDoc.GetNumberOfPages(); page++)
+            {
+                pdfSubstring.Add(PdfTextExtractor.GetTextFromPage(pdfDoc.GetPage(page)).Substring(85, 140));
+            }
+            pdfDoc.Close();
+            return pdfSubstring;
+        }
+        private PdfDocument CreatePDFWriter(string name, string standort)
+        {
+            string destPath = string.Format(@"G:\Untis\UPZ-Pflege\UPZ Sj 20-21\MA-Nachweise\{0}\{1}.pdf", standort, name);
+            PdfWriter pdfWriter = null;
             try
             {
-                PdfDocument pdf = new PdfDocument(new PdfWriter(destPath));
-                return pdf;
+                pdfWriter = new PdfWriter(destPath);
             }
             catch (Exception error)
             {
                 MessageBox.Show(error.ToString());
             }
-            return null;
-        }
 
+            PdfDocument pdf = null;
+            try
+            {
+                pdf = new PdfDocument(pdfWriter);
+            }
+            catch (Exception error)
+            {
+                MessageBox.Show(error.ToString());
+            }
+            return pdf;
+        }
         public MainWindow()
         {
             InitializeComponent();
@@ -53,72 +72,121 @@ namespace UntisUPZperMail
             string[] s = (string[])e.Data.GetData(DataFormats.FileDrop, false);
             if (s != null)
             {
-                if (s[0].Substring(s[0].LastIndexOf('.') + 1, s[0].Length - s[0].LastIndexOf('.') - 1) != "pdf")
+                if (s[0].Substring(s[0].LastIndexOf('.') + 1, s[0].Length - s[0].LastIndexOf('.') - 1) == "pdf")
                 {
-                    DropSign.FontSize = 60;
-                    DropSign.Content = "Nur PDFs";
-                }
-                else
-                {
-                    //List<MsOutlook.MailItem> mails = new List<MsOutlook.MailItem>();
-                    Mouse.OverrideCursor = Cursors.Wait;
-
-                    string teachers = File.ReadAllText(System.IO.Path.Combine(mainPath, "teachers.txt"));
-                    string[] teacher = teachers.Split('\n');
-
-                    string untisVersion = File.ReadAllText(System.IO.Path.Combine(mainPath, "UntisVersion.txt")).Trim('\n', ' ');
-                    string subject = File.ReadAllText(System.IO.Path.Combine(mainPath, "Subject.txt")).Trim('\n', ' ');
-                    string body = File.ReadAllText(System.IO.Path.Combine(mainPath, "Body.txt")).Trim('\n', ' ');
-
+                    string untisVersion = File.ReadAllText(System.IO.Path.Combine(mainPath, "UntisVersion.txt"));
+                    string subject = File.ReadAllText(System.IO.Path.Combine(mainPath, "Subject.txt"));
+                    string body = File.ReadAllText(System.IO.Path.Combine(mainPath, "Body.txt"));
                     string srcPath = s[0];
+                    string destPath = string.Format(@"G:\Untis\UPZ-Pflege\UPZ Sj 20-21\MA-Nachweise");
 
-                    MsOutlook.Application outApp = new MsOutlook.Application();
-                    MsOutlook.Accounts accounts = outApp.Session.Accounts;
-                    MsOutlook.Account account = accounts["upz@sbs-herzogenaurach.de"];
+                    List<String> teachers = new List<String>();
+                    string teachersBuffer = File.ReadAllText(System.IO.Path.Combine(mainPath, "teachers.txt"));
+                    string[] teacherBuffer = teachersBuffer.Split('\n');
+                    foreach (var element in teacherBuffer) teachers.Add(element.TrimEnd(Environment.NewLine.ToCharArray()));
 
-                    var pdfDoc = new PdfDocument(new PdfReader(srcPath));
-                    int mailCounter = 0;
-                    for (int page = 1; page <= pdfDoc.GetNumberOfPages(); page++)
+                    List<String> pdfSubstring = CreatepdfSubstring(srcPath);
+
+                    Dictionary<String, Int32> keyValuePairs = new Dictionary<String, Int32>();
+
+                    foreach (string element in pdfSubstring)
                     {
-                        ITextExtractionStrategy strategy = new SimpleTextExtractionStrategy();
-                        string pageContent = PdfTextExtractor.GetTextFromPage(pdfDoc.GetPage(page), strategy);
-                        foreach (var element in teacher)
+                        foreach (string teacher in teachers)
                         {
-                            string[] teacherElement = element.Split('#');
-                            MessageBox.Show(teacherElement[0] + " " + teacherElement[1]);
-                            if (pageContent.IndexOf(teacherElement[0]) > 0 && pageContent.IndexOf(untisVersion) > 0)
+                            string[] teacherElement = teacher.Split('#');
+                            if (element.Contains(untisVersion) && element.Contains(teacherElement[0]))
                             {
-                                string path = string.Format(@"G:\Untis\UPZ-Pflege\UPZ Sj 20-21\MA-Nachweise\{1}\{0}.pdf", teacherElement[0], teacherElement[1]);
-                                PdfDocument pdf = CreatePDFWriter(path);
-                                if (pdf != null)
-                                {
-                                    PdfDocumentInfo info = pdf.GetDocumentInfo();
-                                    info.SetTitle("Nachweis Unterrichtspflichtzeit");
-                                    info.SetAuthor("");
-                                    info.SetSubject("");
-                                    info.SetKeywords(teacherElement[1]);
-                                    pdfDoc.CopyPagesTo(page, page, pdf);
-                                    var document = new Document(pdf);
-                                    document.Close();
-                                }
-                                
-                                /*
-                                MsOutlook.MailItem mail = (MsOutlook.MailItem)outApp.CreateItem(MsOutlook.OlItemType.olMailItem);
-                                mail.Subject = subject;
-                                mail.To = teacherElement[0];
-                                mail.HTMLBody = body;
-                                mail.Attachments.Add(destPath);
-                                mail.SendUsingAccount = account;
-                                mail.Send();
-                                mailCounter++;
-                                */
-                                break;
+                                keyValuePairs.Add(teacher, pdfSubstring.IndexOf(element) + 1);
                             }
                         }
-
                     }
-                    Mouse.OverrideCursor = Cursors.Hand;
-                    switch (mailCounter)
+
+                    foreach (KeyValuePair<string, int> kvp in keyValuePairs)
+                    {
+                        Debug.Print($"Key: {kvp.Key}, Value: {kvp.Value}");
+                    }
+
+                    MessageBox.Show(keyValuePairs.Count.ToString());
+
+
+
+
+
+
+                    //foreach (string teacher in teachers)
+                    //{
+                    //    
+                    //    foreach (var pdfPage in pdfPages)
+                    //    {
+                    //        if (PdfTextExtractor.GetTextFromPage(pdfPage).Contains(teacherElement[0]) && PdfTextExtractor.GetTextFromPage(pdfPage).Contains(untisVersion))
+                    //        {
+                    //            MessageBox.Show(teacherElement[0] + " gefunden auf Seite: " + pdfPages.IndexOf(pdfPage));
+                    //            break;
+                    //        }
+                    //    }
+                    //}
+
+
+
+
+                    //    MsOutlook.Application outApp = new MsOutlook.Application();
+                    //    MsOutlook.Accounts accounts = outApp.Session.Accounts;
+                    //    MsOutlook.Account account = accounts["upz@sbs-herzogenaurach.de"];
+
+
+
+
+                    //int counter = 0;
+                    //Mouse.OverrideCursor = Cursors.Wait;
+                    //foreach (var element in teacher)
+                    //{
+
+                    //for (int page = 1; page <= pdfDoc.GetNumberOfPages(); page++)
+                    //{
+                    //    PdfPage pdfPage = pdfDoc.GetPage(page);
+                    //    
+                    //    {
+                    //        PdfDocument pdf = CreatePDFWriter(teacherElement[0], teacherElement[1]);
+                    //        if (pdf != null)
+                    //        {
+                    //            PdfDocumentInfo info = pdf.GetDocumentInfo();
+                    //            info.SetTitle("Nachweis Unterrichtspflichtzeit");
+                    //            info.SetAuthor("");
+                    //            info.SetSubject("");
+                    //            info.SetKeywords(teacherElement[1]);
+                    //            pdfDoc.CopyPagesTo(page, page, pdf);
+                    //            var document = new Document(pdf);
+                    //            document.Close();
+                    //            counter++;
+                    //            Debug.Print(counter.ToString());
+                    //        }
+                    //        pdfDoc.RemovePage(page);
+                    //        break;
+                    //    }
+                    //}
+                }
+            }
+            else
+            {
+                DropSign.FontSize = 60;
+                DropSign.Content = "Nur PDFs";
+            }
+                /*
+
+                        MsOutlook.MailItem mail = (MsOutlook.MailItem)outApp.CreateItem(MsOutlook.OlItemType.olMailItem);
+                        mail.Subject = subject;
+                        mail.To = teacherElement[0];
+                        mail.HTMLBody = body;
+                        mail.Attachments.Add(destPath);
+                        mail.SendUsingAccount = account;
+                        mail.Send();
+                        mailCounter++;
+                    }
+            }
+            */
+
+            Mouse.OverrideCursor = Cursors.Hand;
+                    /*switch (mailCounter)
                     {
                         case 0:
                             MessageBox.Show(string.Format($"Dieses PDF enthält keine Wochenwerte aus Untis {untisVersion}.")
@@ -147,8 +215,7 @@ namespace UntisUPZperMail
                             Environment.Exit(0);
                             break;
                     }
-                }
-            }
+                    */
         }
         private void UIE_MouseEnter(object sender, MouseEventArgs e)
         {
