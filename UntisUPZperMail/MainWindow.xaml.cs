@@ -68,7 +68,6 @@ namespace UntisUPZperMail
 
                     List<String> pdfSubstring = CreatepdfSubstring(srcPath, untisVersion);
                     
-
                     if (pdfSubstring != null)
                     {
                         //MessageBox.Show(pdfSubstring.Count.ToString());
@@ -79,7 +78,6 @@ namespace UntisUPZperMail
                             //MessageBox.Show(pdfSubstring[i]);
                             for (int ii = 0; ii < teachers.Count(); ii++)
                             {
-
                                 string[] teacherElement = teachers[ii].Split('#');
                                 //MessageBox.Show("Seite: " + i.ToString() + " Lehrer: " + ii.ToString() + " Name: " + teacherElement[0]);
 
@@ -91,14 +89,19 @@ namespace UntisUPZperMail
                                 }
                             }
                         }
-
+  
                         PdfDocument pdfDoc = new PdfDocument(new PdfReader(srcPath));
 
-                        foreach (KeyValuePair<string, int> kvp in keyValuePairs)
+                        foreach (KeyValuePair<String, Int32> kvp in keyValuePairs)
                         {
                             //Debug.Print($"Key: {kvp.Key}, Value: {kvp.Value}");
                             string[] teacherElement = kvp.Key.Split('#');
                             string destPath = string.Format(@"G:\Untis\UPZ-Pflege\UPZ Sj 20-21\MA-Nachweise\{0}\{1}.pdf", teacherElement[1], teacherElement[0]);
+                            if (File.Exists(destPath))
+                            {
+                                string[] exist = Directory.GetFiles(string.Format(@"G:\Untis\UPZ-Pflege\UPZ Sj 20-21\MA-Nachweise\{0}", teacherElement[1]), $"{teacherElement[0]}*.pdf", SearchOption.TopDirectoryOnly);
+                                destPath = string.Format(@"G:\Untis\UPZ-Pflege\UPZ Sj 20-21\MA-Nachweise\{0}\{1} ({2}).pdf", teacherElement[1], teacherElement[0], exist.Length);
+                            }
                             PdfWriter pdfWriter = new PdfWriter(destPath);
                             PdfDocument pdf = new PdfDocument(pdfWriter);
                             if (pdf != null)
@@ -108,7 +111,7 @@ namespace UntisUPZperMail
                                 info.SetAuthor("");
                                 info.SetSubject("");
                                 info.SetKeywords(teacherElement[1]);
-                                pdfDoc.CopyPagesTo(kvp.Value, kvp.Value, pdf);
+                                pdfDoc.CopyPagesTo(kvp.Value, kvp.Value , pdf);
                                 var document = new Document(pdf);
                                 document.Close();
                             }
@@ -119,12 +122,11 @@ namespace UntisUPZperMail
                     }
 
 
-
-
                     //    MsOutlook.Application outApp = new MsOutlook.Application();
                     //    MsOutlook.Accounts accounts = outApp.Session.Accounts;
                     //    MsOutlook.Account account = accounts["upz@sbs-herzogenaurach.de"];
 
+                    string[] exist = Directory.GetFiles(string.Format(@"G:\Untis\UPZ-Pflege\UPZ Sj 20-21\MA-Nachweise\{0}", teacherElement[1]), $"{teacherElement[0]}*.pdf", SearchOption.TopDirectoryOnly);
 
 
 
@@ -133,7 +135,7 @@ namespace UntisUPZperMail
                     //foreach (var element in teacher)
                     //{
 
-                    
+
                     //        PdfDocument pdf = CreatePDFWriter(teacherElement[0], teacherElement[1]);
                     //        if (pdf != null)
                     //        {
