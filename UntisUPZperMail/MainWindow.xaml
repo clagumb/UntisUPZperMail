@@ -11,6 +11,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="50" />
             <RowDefinition Height="50" />
+            <RowDefinition Height="2" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <TextBlock FontSize="30"
@@ -55,5 +56,11 @@
                    Panel.ZIndex="0"
                    AllowDrop="true"
                    DragEnter="MyBorder_DragEnter" DragLeave="MyBorder_DragLeave" Drop="Border_Drop">Drag and Drop Untis PDF oder Klick für Dateiauswahl</TextBlock>
+        <Canvas Grid.Column="0"
+                Grid.Row="2"
+                Margin="5,0,5,0"
+                Background="LightGray"/>
+        
+        
     </Grid>
 </Window>

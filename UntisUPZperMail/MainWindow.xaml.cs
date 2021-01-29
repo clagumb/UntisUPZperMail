@@ -29,7 +29,22 @@ namespace UntisUPZperMail
     {
         private readonly string mainPath = @"G:\Ablage neu\03 Schulverwaltung\SchVwSoftware\config\UntisUPZperMail";
         private readonly string txtBlockText = "Drag and Drop Untis PDF oder Klick für Dateiauswahl";
-        private readonly string untisVersion; 
+        private readonly string untisVersion;
+
+        private List<String> GetTeachersWhitNoFile(List<String> _buffer)
+        {
+            List<String> buffer = new List<String>();
+            foreach (String element in _buffer)
+            {
+                string[] teacherElement = element.Split('#');
+                if (!File.Exists(System.IO.Path.Combine(mainPath, string.Format(@"{0}\{1}.pdf", teacherElement[1], teacherElement[0]))))
+                {
+                    buffer.Add(element);
+                }
+            }
+
+            return buffer;
+        }
         private List<String> CreatepdfSubstring(string srcPath, string untisVersion)
         {
             PdfDocument pdfDoc = new PdfDocument(new PdfReader(srcPath));
@@ -50,20 +65,16 @@ namespace UntisUPZperMail
         {
             if (fileDrop.Substring(fileDrop.LastIndexOf('.') + 1, fileDrop.Length - fileDrop.LastIndexOf('.') - 1) == "pdf")
             {
-                DropBox.StrokeDashArray = new DoubleCollection() { 4, 0 };
-                DropBox.Stroke = Brushes.Green;
-                DropBox.StrokeThickness = 4;
-
-                
                 string subject = File.ReadAllText(System.IO.Path.Combine(mainPath, "Subject.txt"));
                 string body = File.ReadAllText(System.IO.Path.Combine(mainPath, "Body.txt"));
                 string srcPath = fileDrop;
 
-                List<String> teachers = new List<String>();
+                List<String> teachersListBuffer = new List<String>();
                 string teachersBuffer = File.ReadAllText(System.IO.Path.Combine(mainPath, "teachers.txt"));
                 string[] teacherBuffer = teachersBuffer.Split('\r');
-                foreach (var element in teacherBuffer) teachers.Add(element.Trim(' ', '\n'));
+                foreach (var element in teacherBuffer) teachersListBuffer.Add(element.Trim(' ', '\n'));
 
+                List<String> teachers = GetTeachersWhitNoFile(teachersListBuffer);
                 List<String> pdfSubstring = CreatepdfSubstring(srcPath, untisVersion);
 
                 if (pdfSubstring != null)
@@ -118,7 +129,6 @@ namespace UntisUPZperMail
                     MessageBox.Show("fertig");
                     this.Close();
                 }
-
 
                 //    MsOutlook.Application outApp = new MsOutlook.Application();
                 //    MsOutlook.Accounts accounts = outApp.Session.Accounts;
@@ -253,6 +263,9 @@ namespace UntisUPZperMail
                     {
                         pdfDoc.Close();
                         txtBlock.Text = "Untis "+ untisVersion + " PDF erkannt. Zur Verarbeitung los lassen.";
+                        DropBox.StrokeDashArray = new DoubleCollection() { 4, 0 };
+                        DropBox.Stroke = Brushes.Green;
+                        DropBox.StrokeThickness = 4;
                     }
                     else
                     {
