@@ -30,65 +30,16 @@ namespace UntisUPZperMail
         //private readonly string txtBlockText = "Drag and Drop Untis PDF oder Klick für Dateiauswahl";
         //private readonly string untisVersion = File.ReadAllText(@"G:\Ablage neu\03 Schulverwaltung\SchVwSoftware\config\UntisUPZperMail\UntisVersion.txt");
         private static readonly string untisPath = File.ReadAllText(@"G:\Ablage neu\03 Schulverwaltung\SchVwSoftware\config\UntisUPZperMail\UntisPath.txt");
+        private readonly Teachers teachers;
 
         public MainWindow()
         {
             InitializeComponent();
-            Teachers teachers = new Teachers(untisPath, MyStackPanel);
+            teachers = new Teachers(untisPath, MyStackPanel);
         }
 
         /*
-        private void LetsDoIt(string fileDrop)
-        {
-            if (fileDrop.Substring(fileDrop.LastIndexOf('.') + 1, fileDrop.Length - fileDrop.LastIndexOf('.') - 1) == "pdf")
-            {
-                string srcPath = fileDrop;
-
-                List<string> teachersListAfterCheck = GetTeachersWhitNoFile();
-                if (teachersListAfterCheck.Count == 0)
-                {
-                    MessageBox.Show("Es gibt für jede Lehrkraft bereits ein PDF."
-                                    , "Warnung"
-                                    , MessageBoxButton.OK
-                                    , MessageBoxImage.Error
-                                    , MessageBoxResult.OK
-                                    , MessageBoxOptions.DefaultDesktopOnly);
-                    Environment.Exit(0);
-                }
-
-                foreach (string element in teachersListAfterCheck)
-                {
-                    string[] teacherElement = element.Split('#');
-                    TextBlock textBlock = new TextBlock
-                    {
-                        Text = teacherElement[0],
-                        FontSize = 12
-                    };
-                    MyStackPanel.Children.Add(textBlock);
-                }
-
-                MessageBox.Show("E-Mails versenden?"
-                                   , "Abfrage"
-                                   , MessageBoxButton.OKCancel
-                                   , MessageBoxImage.Question
-                                   , MessageBoxResult.OK
-                                   , MessageBoxOptions.DefaultDesktopOnly);
-
-                //List<string> pdfSubstring = CreatePDFSubstring(srcPath, untisVersion);
-
-                Dictionary<string, int> keyValuePairs = new Dictionary<string, int>();
-                for (int i = 0; i < pdfSubstring.Count(); i++)
-                {
-                    for (int ii = 0; ii < teachersListAfterCheck.Count(); ii++)
-                    {
-                        string[] teacherElement = teachersListAfterCheck[ii].Split('#');
-                        if (pdfSubstring[i].Contains(teacherElement[0]))
-                        {
-                            keyValuePairs.Add(teachersListAfterCheck[ii], i + 1);
-                            break;
-                        }
-                    }
-                }
+               
 
                 PdfDocument pdfDoc = new PdfDocument(new PdfReader(srcPath));
                 foreach (KeyValuePair<string, int> kvp in keyValuePairs)
@@ -149,6 +100,7 @@ namespace UntisUPZperMail
         {
             Mouse.OverrideCursor = Cursors.Hand;
         }
+
         private void UIE_MouseLeave(object sender, MouseEventArgs e)
         {
             Mouse.OverrideCursor = Cursors.Arrow;
@@ -184,7 +136,11 @@ namespace UntisUPZperMail
                     break;
             }
             PDFs pDFs = new PDFs(fileDrop);
-            MessageBox.Show(pDFs.GetNumberOfListElements().ToString());
-        }  
+            teachers.MakePdfDictonary(pDFs.GetPdfSubsring);
+            foreach (KeyValuePair<string, int> kvp in teachers.GetDictonary)
+            {
+                Debug.Print($"Key: {kvp.Key}, Value: {kvp.Value}");
+            }
+        }
     }
 }

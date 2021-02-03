@@ -14,6 +14,7 @@ namespace UntisUPZperMail
     {
         private readonly List<string> teachersListBeforCheck = new List<string>();
         private readonly List<string> teachersListAfterCheck = new List<string>();
+        private readonly Dictionary<string, int> keyValuePairs = new Dictionary<string, int>();
         public Teachers(string untisPath, StackPanel stackPanel)
         {
             string teachersLongString = File.ReadAllText(@"G:\Ablage neu\03 Schulverwaltung\SchVwSoftware\config\UntisUPZperMail\Teachers.txt");
@@ -59,8 +60,27 @@ namespace UntisUPZperMail
                 stackPanel.Children.Add(textBlock);
             }
         }
+
+        public void MakePdfDictonary(List<string> pdfSubstring)
+        {
+            for (int i = 0; i < pdfSubstring.Count(); i++)
+            {
+                for (int ii = 0; ii < teachersListAfterCheck.Count(); ii++)
+                {
+                    string[] teacherElement = teachersListAfterCheck[ii].Split('#');
+                    if (pdfSubstring[i].Contains(teacherElement[0]))
+                    {
+                        keyValuePairs.Add(teachersListAfterCheck[ii], i + 1);
+                        break;
+                    }
+                }
+            }
+        }
+
         public List<string> ListBeforeCheck => teachersListBeforCheck;
         public List<string> ListAfterCheck => teachersListAfterCheck;
+        public Dictionary<string, int> GetDictonary => keyValuePairs;
         public int GetNumberOfListElements(List<string> buffer) => buffer.Count;
+        public int GetNumberOfDictonaryElements => keyValuePairs.Count;
     }
 }

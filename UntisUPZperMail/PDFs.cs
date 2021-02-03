@@ -1,5 +1,6 @@
 ﻿using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
+using iText.Kernel.Pdf.Canvas.Parser.Listener;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -34,12 +35,15 @@ namespace UntisUPZperMail
                 Mouse.OverrideCursor = Cursors.Wait;
                 for (int page = 1; page <= pdfDoc.GetNumberOfPages(); page++)
                 {
-                    pdfSubstring.Add(PdfTextExtractor.GetTextFromPage(pdfDoc.GetPage(page)).Substring(140, 54));
+                    ITextExtractionStrategy strategy = new SimpleTextExtractionStrategy();
+                    string textContent = PdfTextExtractor.GetTextFromPage(pdfDoc.GetPage(page), strategy);
+                    pdfSubstring.Add(textContent.Substring(162, 35));
                 }
                 Mouse.OverrideCursor = Cursors.Arrow;
                 pdfDoc.Close();
             }
         }
         public int GetNumberOfListElements() => pdfSubstring.Count;
+        public List<string> GetPdfSubsring => pdfSubstring;
     }
 }
