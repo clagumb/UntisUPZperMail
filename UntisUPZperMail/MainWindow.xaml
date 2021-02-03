@@ -6,61 +6,81 @@
         mc:Ignorable="d"
         Title="UPZ per Mail by Claus Gumbmann"
         Width="400"
-        ResizeMode="CanResizeWithGrip">
+        ResizeMode="NoResize">
     <Grid ShowGridLines="False">
         <Grid.RowDefinitions>
             <RowDefinition Height="50" />
             <RowDefinition Height="50" />
-            <RowDefinition Height="2" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <TextBlock FontSize="30"
-                   FontWeight="Bold"
-                   VerticalAlignment="Top"
-                   HorizontalAlignment="Center">
-            <TextBlock.Effect>
-                <DropShadowEffect BlurRadius="6" Color="#FFC1B4B4" Opacity="0.6"/>
-            </TextBlock.Effect>UPZ per Mail</TextBlock>
-        <Canvas x:Name="CanvasDrop"
-                Grid.Column="0"
-                Grid.Row="1"
-                Background="Transparent"
+        
+    <TextBlock Text="UPZ per Mail"
+               FontSize="30"
+               FontWeight="Bold"
+               VerticalAlignment="Top"
+               HorizontalAlignment="Center">
+        <TextBlock.Effect>
+            <DropShadowEffect BlurRadius="6" Color="#FFC1B4B4" Opacity="0.6"/>
+        </TextBlock.Effect>
+    </TextBlock>
+
+<Canvas Grid.Row="1"
+        VerticalAlignment="Top"
+        Height="2"
+        Margin="5,0,5,0"
+        Background="LightGray">
+</Canvas>
+
+        <WrapPanel Grid.Row="1"
+           HorizontalAlignment="Left"
+           VerticalAlignment="Center">
+            <TextBlock FontSize="12"
+                       VerticalAlignment="Center"
+                       Margin="5,0,5,0">Schuljahr</TextBlock>
+            <ComboBox x:Name="cmbbxschuljahr">
+                <ComboBoxItem IsSelected="True">2020/21</ComboBoxItem>
+                <ComboBoxItem >2019/21</ComboBoxItem>
+            </ComboBox>
+        </WrapPanel>
+        <WrapPanel Grid.Row="1"
+           HorizontalAlignment="Right"
+           VerticalAlignment="Center">
+            <TextBox x:Name="txtbxfilename"
+                     Width="200"
+                     FontSize="12"
+                     VerticalContentAlignment="Center"
+                     HorizontalContentAlignment="Left">
+            </TextBox>
+            <Button Content="Datei"
+                    Padding="2,0,2,0"
+                    Margin="5,0,5,0"
+                    Click="Datei_Button_Click"
+                    MouseEnter="UIE_MouseEnter"
+                    MouseLeave="UIE_MouseLeave">
+            </Button>
+            
+        </WrapPanel>
+
+        <Canvas Grid.Row="1"
+        VerticalAlignment="Bottom"
+        Height="2"
+        Margin="5,0,5,0"
+        Background="LightGray">
+</Canvas>
+
+<ScrollViewer Grid.Column="0"
+                Grid.Row="3"
                 Margin="5"
-                Panel.ZIndex="2"
-                AllowDrop="true"
-                DragEnter="MyBorder_DragEnter"
-                DragLeave="MyBorder_DragLeave"
-                Drop="Border_Drop"
-                MouseEnter="UIE_MouseEnter"
-                MouseLeave="UIE_MouseLeave"
-                MouseLeftButtonDown="CanvasDrop_MouseLeftButtonDown"/>
-        <Rectangle x:Name="DropBox"
-                   Grid.Column="0"
-                   Grid.Row="1"
-                   VerticalAlignment="Stretch"
-                   HorizontalAlignment="Stretch"
-                   Margin="5"
-                   Stroke="#FF000000"
-                   StrokeThickness="2"
-                   StrokeDashArray="4 4"
-                   SnapsToDevicePixels="True"
-                   RadiusX="10"
-                   RadiusY="10"
-                   Panel.ZIndex="1"/>
-        <TextBlock x:Name="txtBlock"
-                   Grid.Column="0"
-                   Grid.Row="1"
-                   Margin="10"
-                   VerticalAlignment="Center"
-                   HorizontalAlignment="Center"
-                   Panel.ZIndex="0"
-                   AllowDrop="true"
-                   DragEnter="MyBorder_DragEnter" DragLeave="MyBorder_DragLeave" Drop="Border_Drop">Drag and Drop Untis PDF oder Klick für Dateiauswahl</TextBlock>
-        <Canvas Grid.Column="0"
-                Grid.Row="2"
-                Margin="5,0,5,0"
-                Background="LightGray"/>
-        
-        
+                HorizontalScrollBarVisibility="Disabled"
+                VerticalScrollBarVisibility="Auto">
+            <StackPanel x:Name="MyStackPanel"
+                Grid.Column="0"
+                Grid.Row="3"
+                Background="AliceBlue"
+                Margin="5"
+                VerticalAlignment="Stretch"
+                HorizontalAlignment="Stretch">
+    </StackPanel>
+    </ScrollViewer>
     </Grid>
 </Window>
